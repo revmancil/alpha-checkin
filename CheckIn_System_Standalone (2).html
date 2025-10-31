@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Phi Alpha Check-In System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #003366 0%, #004d80 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .card h2 {
+            color: #003366;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #004d80;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #004d80;
+            box-shadow: 0 0 5px rgba(0, 77, 128, 0.3);
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #003366;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #004d80;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 77, 128, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result.granted {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            color: #155724;
+        }
+        
+        .result.denied {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .result.error {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            color: #856404;
+        }
+        
+        .result h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .result-details {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 4px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+        }
+        
+        .share-section {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #004d80;
+        }
+        
+        .share-section h3 {
+            color: #003366;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        
+        .share-section p {
+            color: #555;
+            margin-bottom: 12px;
+            font-size: 0.9em;
+        }
+        
+        .url-display {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #004d80;
+            font-size: 0.85em;
+            word-break: break-all;
+            color: #003366;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+        
+        .copy-button {
+            background: #28a745;
+            padding: 10px 16px;
+            font-size: 0.95em;
+        }
+        
+        .copy-button:hover {
+            background: #218838;
+        }
+        
+        .copy-feedback {
+            margin-top: 10px;
+            padding: 10px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 6px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .copy-feedback.show {
+            display: block;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-box {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #004d80;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #003366;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .checkin-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .checkin-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid #28a745;
+            border-radius: 4px;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .checkin-item::before {
+            content: "✓";
+            margin-right: 10px;
+            font-weight: bold;
+            color: #28a745;
+            font-size: 1.2em;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Alpha Phi Alpha Check-In</h1>
+            <p>TCAC Area 1 IMDP Check-In</p>
+        </div>
+        
+        <div class="main-grid">
+            <!-- Check-In Form -->
+            <div class="card">
+                <h2>Check-In Form</h2>
+                
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input 
+                        type="text" 
+                        id="firstName" 
+                        placeholder="Enter your first name"
+                        autocomplete="given-name"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input 
+                        type="text" 
+                        id="lastName" 
+                        placeholder="Enter your last name"
+                        autocomplete="family-name"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="chapter">Chapter</label>
+                    <select id="chapter">
+                        <option value="">-- Select Chapter --</option>
+                        <option value="Alpha Sigma Lambda">Alpha Sigma Lambda</option>
+                        <option value="Eta Epsilon">Eta Epsilon</option>
+                        <option value="Gamma Upsilon Lambda">Gamma Upsilon Lambda</option>
+                        <option value="Iota Kappa">Iota Kappa</option>
+                        <option value="Rho Nu Lambda">Rho Nu Lambda</option>
+                        <option value="Upsilon Mu">Upsilon Mu</option>
+                        <option value="Xi Tau Lambda">Xi Tau Lambda</option>
+                        <option value="Zeta Tau">Zeta Tau</option>
+                    </select>
+                </div>
+                
+                <button onclick="checkIn()">Check In</button>
+                
+                <div id="result" class="result"></div>
+            </div>
+            
+            <!-- Share & Stats -->
+            <div class="card">
+                <h2>Share & Stats</h2>
+                
+                <div class="share-section">
+                    <h3>📱 Share Check-In Link</h3>
+                    <p>Copy this link to share with brothers so they can check in on their phones:</p>
+                    <div class="url-display" id="urlDisplay"></div>
+                    <button class="copy-button" onclick="copyUrl()">📋 Copy Link to Clipboard</button>
+                    <div id="copyFeedback" class="copy-feedback">✓ Link copied to clipboard!</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-number" id="checkinCount">0</div>
+                        <div class="stat-label">Checked In</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">230</div>
+                        <div class="stat-label">Total Brothers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Check-In History -->
+        <div class="card">
+            <h2>Recent Check-Ins</h2>
+            <div class="checkin-list" id="checkinList">
+                <p style="color: #999; text-align: center;">No check-ins yet</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Brother data
+        const brotherData = [{"firstName": "Chukwudi", "lastName": "Agbakwu", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Ananise", "lastName": "Alexander", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Matthew", "lastName": "Ayyoub", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Colin", "lastName": "Benson", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Jordan", "lastName": "Benson", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Reginald", "lastName": "Bibb", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Phillip", "lastName": "Bledsoe", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Larry", "lastName": "Bryant", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Deantre", "lastName": "Campbell", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Damien", "lastName": "Carter", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Jimmy", "lastName": "Carter", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "John", "lastName": "Choyce", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Joseph", "lastName": "Collier", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Rothiel", "lastName": "Davis", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Steven", "lastName": "Dial", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Colister", "lastName": "Dickson", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Nathaniel", "lastName": "Dixon", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Jayden", "lastName": "Donald", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Cory", "lastName": "Falade", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Willie", "lastName": "Franklin", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Joseph", "lastName": "Gill", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Jeffrey", "lastName": "Greenwood", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "David", "lastName": "Griffin", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Reuben", "lastName": "Griffin", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Amare'", "lastName": "Hardee", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Jalon", "lastName": "Harris", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Donald", "lastName": "Hollins", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Robert", "lastName": "Holloway", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Aubrey", "lastName": "Hooper", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Lasana", "lastName": "Hotep", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Andrew", "lastName": "Jackson", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Charles", "lastName": "Jefferson", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Jacobi", "lastName": "Jefferson", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "James", "lastName": "Jones", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Christopher", "lastName": "Jordan", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Stephen", "lastName": "Jordan", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Theodore", "lastName": "Lawrence", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Neothies", "lastName": "Lindley", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Robert", "lastName": "Lumpkins", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Zachary", "lastName": "Mason", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Raumond", "lastName": "Mayo", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Malcolm", "lastName": "McGuire", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Eric", "lastName": "McNairy", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Curtis", "lastName": "Morgan", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "OMARI", "lastName": "NEBBITTS", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Tommy", "lastName": "Nichols", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Billy", "lastName": "Overton", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Christopher", "lastName": "Pankey", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Stephen", "lastName": "Pipkin", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Shawn", "lastName": "Pullum", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Michael", "lastName": "Rachal", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Asa", "lastName": "Randolph", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Dion", "lastName": "Robbins", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Bryan", "lastName": "Robinson", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Roderick", "lastName": "Shavers", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Darwin", "lastName": "Shaw", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Gregory", "lastName": "Sinkfield", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Garick", "lastName": "Standback", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Carlos", "lastName": "Stewart", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Kelvinal", "lastName": "Stumon", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Theo", "lastName": "Tanner", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Rodney", "lastName": "Thrash", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Vernell", "lastName": "Trigg", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Andre", "lastName": "Turner", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "David", "lastName": "Tyson", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "LaDaris", "lastName": "Wallace", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Veorge", "lastName": "Weathersby", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "John", "lastName": "Webb", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Marcus", "lastName": "White", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Johnny", "lastName": "Williams", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Shawn", "lastName": "Williams", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Torenzo", "lastName": "Williams", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Christopher", "lastName": "Willis", "chapter": "Alpha Sigma Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Jon", "lastName": "Batiste", "chapter": "Eta Epsilon", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Steven", "lastName": "Bobo", "chapter": "Eta Epsilon", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Daniel", "lastName": "Dixon", "chapter": "Eta Epsilon", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Jhaden", "lastName": "Gordon", "chapter": "Eta Epsilon", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Albin", "lastName": "Muneza", "chapter": "Eta Epsilon", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Benjamin", "lastName": "Washington", "chapter": "Eta Epsilon", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Quentin", "lastName": "Arnold", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Christopher", "lastName": "Barbour", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Michael", "lastName": "Bertrand", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Cedric", "lastName": "Brown", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Eghosa", "lastName": "Egbenoma", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Wallace", "lastName": "Ford", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Calvin", "lastName": "Green", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Larry", "lastName": "Hall", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Elgrie", "lastName": "Hurd", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Benjamin", "lastName": "Jackson", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Nicholas", "lastName": "Johnson", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Jabari", "lastName": "Jones", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Jonathan", "lastName": "Jones", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Daniel", "lastName": "Keeling", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Christopher", "lastName": "Mitchell", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Marvin", "lastName": "Mitchell", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Anthony", "lastName": "Peterson", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "James", "lastName": "Richardson", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Stephen", "lastName": "Smith", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Warren", "lastName": "Smith", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Keith", "lastName": "Somerville", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Freddie", "lastName": "Stanmore", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Larry", "lastName": "Tyler", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Roderic", "lastName": "Tyler", "chapter": "Gamma Upsilon Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Ajalon", "lastName": "Washington", "chapter": "Iota Kappa", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Anthony", "lastName": "Abernathy", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Antoine", "lastName": "Abernathy", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Denard", "lastName": "Andrews", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Eric", "lastName": "Barber", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Senai", "lastName": "Barlow", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Xavian", "lastName": "Bess", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Donald", "lastName": "Bishop", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Michael", "lastName": "Boone", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Patrick", "lastName": "Bradley", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Myron", "lastName": "Brown", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Alex", "lastName": "Coulter", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Jason", "lastName": "Cox", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Cameron", "lastName": "Davis", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Charlie", "lastName": "Dean", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Danny", "lastName": "Edwards", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Kyle", "lastName": "Edwards", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Curtis", "lastName": "Elliott", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Gerald", "lastName": "Evans", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Reginald", "lastName": "Flinn", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Eliott", "lastName": "Ford", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Gregory", "lastName": "Forge", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "DeMario", "lastName": "Frost", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Jules", "lastName": "Glapion", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Scottie", "lastName": "Hawkins", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Walter", "lastName": "Herron", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Calvin", "lastName": "Hilton", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Prince", "lastName": "Hutchinson", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Delbert", "lastName": "Johnson", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Reginald", "lastName": "Johnson", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Christopher", "lastName": "Jones", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Samuel", "lastName": "Jones", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Kevin", "lastName": "Lewis", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Paul", "lastName": "Long", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Darrell", "lastName": "Luther", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Nathaniel", "lastName": "Mallery", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Kenn", "lastName": "Manous", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Don", "lastName": "Nicholas", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Malik", "lastName": "Oliver", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Kellon", "lastName": "Pearson", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Christopher", "lastName": "Perkins", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Wallace", "lastName": "Rayford", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Donald", "lastName": "Robertson", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Roderick", "lastName": "Sibley", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Steven", "lastName": "Sistrunk", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Jerrard", "lastName": "Smith Hopkins", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Cleophus", "lastName": "Smith", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Darian", "lastName": "Smith", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Toronto", "lastName": "Spikes", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Daishaun", "lastName": "Sylva-Senette", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Edwin", "lastName": "Taylor", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Reggie", "lastName": "Texada", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Christopher", "lastName": "Thomas", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Eric", "lastName": "Tisdale", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Eugene", "lastName": "Walker", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Freddie", "lastName": "Walker", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "RIJO", "lastName": "WALKER", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Norbert", "lastName": "Ward", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Shawn", "lastName": "Wilder", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Patrick", "lastName": "Wilson", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Reginald", "lastName": "Young", "chapter": "Rho Nu Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Christopher", "lastName": "DeGrate", "chapter": "Upsilon Mu", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Dwaine", "lastName": "Austin", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Roger", "lastName": "Bouyer", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Joseph", "lastName": "Boyd", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Christopher", "lastName": "Brannon", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Lewis", "lastName": "Brewer", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Anthony", "lastName": "Calime", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Eniola", "lastName": "Campbell", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Mancil", "lastName": "Carroll", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Larry", "lastName": "Carter", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Mark", "lastName": "Carthledge", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "Edward", "lastName": "Coleman", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Elmer", "lastName": "Corbin", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Kevin", "lastName": "Crawford", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Vernon", "lastName": "Cromedy", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Isaiah", "lastName": "Crosby", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Willie", "lastName": "Edwards", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Devon", "lastName": "Ekpenyong", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Adrian", "lastName": "Escalante", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Michael", "lastName": "Finch", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Gerry", "lastName": "Fisher", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Andrew", "lastName": "Forest", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "DeWitt", "lastName": "Foster", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Shane", "lastName": "Gilmore", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Keith", "lastName": "Gissandaner", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Brent", "lastName": "Graham", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Arthur", "lastName": "Gregg", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Terrance", "lastName": "Hardison", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Tyler", "lastName": "Hicks", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "David", "lastName": "Hines", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Wilton", "lastName": "Hollins", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Leon", "lastName": "Johnson", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Stephen", "lastName": "Jones", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Victor", "lastName": "Lankford", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Christopher", "lastName": "Loupe", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Damondre", "lastName": "Lynn", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Michael", "lastName": "Malone", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Jerry", "lastName": "Maynard", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Norris", "lastName": "Minter", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Kenechukwu", "lastName": "Mmeje", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Frederick", "lastName": "Nickens", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Darrin", "lastName": "Nixon", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Michael", "lastName": "Opatola", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Derrick", "lastName": "Perry", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Kenneth", "lastName": "Poinsette", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Jerry", "lastName": "Power", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Samuel", "lastName": "Seward", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Edwin", "lastName": "Smith", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Philip", "lastName": "Smith", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Christian-Joshua", "lastName": "Stevens", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Charles", "lastName": "Thomas", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Tyler", "lastName": "Thomas", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Jeffrey", "lastName": "Tyler", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Cedric", "lastName": "Washington", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Joshua", "lastName": "Wilborn", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2025"}, {"firstName": "Reginald", "lastName": "Willis", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Matthew", "lastName": "Wortham-Merritt", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Alan", "lastName": "Wright", "chapter": "Xi Tau Lambda", "imdpDate": "12/31/2025", "riskManagementDate": "12/31/2026"}, {"firstName": "Anthony", "lastName": "Bell", "chapter": "Zeta Tau", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Andrew", "lastName": "Collins", "chapter": "Zeta Tau", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2025"}, {"firstName": "TyJuan", "lastName": "Hughey", "chapter": "Zeta Tau", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Landon", "lastName": "King", "chapter": "Zeta Tau", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Evyon", "lastName": "Lewis", "chapter": "Zeta Tau", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Sydnei", "lastName": "Pruitt", "chapter": "Zeta Tau", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "Lunden", "lastName": "Selmon", "chapter": "Zeta Tau", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}, {"firstName": "MaKiyah", "lastName": "Solomon", "chapter": "Zeta Tau", "imdpDate": "12/31/2026", "riskManagementDate": "12/31/2026"}];
+        const checkedInBrothers = [];
+        
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            displayUrl();
+        });
+        
+        // Display the URL in the share section
+        function displayUrl() {
+            const urlDisplay = document.getElementById('urlDisplay');
+            urlDisplay.textContent = window.location.href;
+        }
+        
+        // Copy URL to clipboard
+        function copyUrl() {
+            const url = window.location.href;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    showCopyFeedback();
+                }).catch(err => {
+                    alert('Link: ' + url);
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopyFeedback();
+            }
+        }
+        
+        function showCopyFeedback() {
+            const feedback = document.getElementById('copyFeedback');
+            feedback.classList.add('show');
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Check-in logic
+        function checkIn() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const chapter = document.getElementById('chapter').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!firstName || !lastName || !chapter) {
+                showResult('error', '⚠️ Please fill in all fields', null);
+                return;
+            }
+            
+            const brother = brotherData.find(b =>
+                b.firstName.toLowerCase() === firstName.toLowerCase() &&
+                b.lastName.toLowerCase() === lastName.toLowerCase() &&
+                b.chapter === chapter
+            );
+            
+            if (brother) {
+                showResult('granted', '✅ ADMISSION GRANTED', brother);
+                checkedInBrothers.unshift(`${firstName} ${lastName}`);
+                updateCheckinList();
+                updateStats();
+            } else {
+                showResult('denied', '❌ ADMISSION DENIED', null);
+            }
+            
+            // Clear form
+            document.getElementById('firstName').value = '';
+            document.getElementById('lastName').value = '';
+            document.getElementById('chapter').value = '';
+            document.getElementById('firstName').focus();
+        }
+        
+        function showResult(status, title, brother) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result show ' + status;
+            
+            let html = `<h3>${title}</h3>`;
+            
+            if (status === 'granted' && brother) {
+                html += `
+                    <div class="result-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Name:</span>
+                            <span>${brother.firstName} ${brother.lastName}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Chapter:</span>
+                            <span>${brother.chapter}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">IMDP Cert:</span>
+                            <span>${brother.imdpDate}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Risk Mgmt:</span>
+                            <span>${brother.riskManagementDate}</span>
+                        </div>
+                    </div>
+                `;
+            } else if (status === 'denied') {
+                html += '<p>Name not found on roster. Please verify information and try again.</p>';
+            } else {
+                html += '<p>All fields are required.</p>';
+            }
+            
+            resultDiv.innerHTML = html;
+            
+            // Auto-hide error/denied after 5 seconds
+            if (status === 'error' || status === 'denied') {
+                setTimeout(() => {
+                    resultDiv.classList.remove('show');
+                }, 5000);
+            }
+        }
+        
+        function updateCheckinList() {
+            const list = document.getElementById('checkinList');
+            if (checkedInBrothers.length === 0) {
+                list.innerHTML = '<p style="color: #999; text-align: center;">No check-ins yet</p>';
+                return;
+            }
+            
+            list.innerHTML = checkedInBrothers
+                .slice(0, 10)
+                .map(name => `<div class="checkin-item">${name}</div>`)
+                .join('');
+        }
+        
+        function updateStats() {
+            document.getElementById('checkinCount').textContent = checkedInBrothers.length;
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('firstName').addEventListener('keypress', e => {
+            if (e.key === 'Enter') document.getElementById('lastName').focus();
+        });
+        document.getElementById('lastName').addEventListener('keypress', e => {
+            if (e.key === 'Enter') document.getElementById('chapter').focus();
+        });
+        document.getElementById('chapter').addEventListener('keypress', e => {
+            if (e.key === 'Enter') checkIn();
+        });
+    </script>
+</body>
+</html>
